@@ -143,20 +143,6 @@ let g:better_escape_interval = 200
 """"""""""""""""""""""""""""vim-xkbswitch settings"""""""""""""""""""""""""
 let g:XkbSwitchEnabled = 1
 
-"""""""""""""""""""""""""""""" neoformat settings """""""""""""""""""""""
-let g:neoformat_enabled_python = ['black', 'yapf']
-let g:neoformat_cpp_clangformat = {
-      \ 'exe': 'clang-format',
-      \ 'args': ['--style="{IndentWidth: 4}"']
-      \ }
-let g:neoformat_c_clangformat = {
-      \ 'exe': 'clang-format',
-      \ 'args': ['--style="{IndentWidth: 4}"']
-      \ }
-
-let g:neoformat_enabled_cpp = ['clangformat']
-let g:neoformat_enabled_c = ['clangformat']
-
 """""""""""""""""""""""""vim-markdown settings"""""""""""""""""""
 " Disable header folding
 let g:vim_markdown_folding_disabled = 1
@@ -216,68 +202,6 @@ nmap ga <Plug>(UnicodeGA)
 " Map s to nop since s in used by vim-sandwich. Use cl instead of s.
 nmap s <Nop>
 omap s <Nop>
-
-""""""""""""""""""""""""""""vimtex settings"""""""""""""""""""""""""""""
-if executable('latex')
-  " Hacks for inverse search to work semi-automatically,
-  " see https://jdhao.github.io/2021/02/20/inverse_search_setup_neovim_vimtex/.
-  function! s:write_server_name() abort
-    let nvim_server_file = (has('win32') ? $TEMP : '/tmp') . '/vimtexserver.txt'
-    call writefile([v:servername], nvim_server_file)
-  endfunction
-
-  augroup vimtex_common
-    autocmd!
-    autocmd FileType tex call s:write_server_name()
-    autocmd FileType tex nmap <buffer> <F9> <plug>(vimtex-compile)
-  augroup END
-
-  let g:vimtex_compiler_latexmk = {
-        \ 'build_dir' : 'build',
-        \ }
-
-  " TOC settings
-  let g:vimtex_toc_config = {
-        \ 'name' : 'TOC',
-        \ 'layers' : ['content', 'todo', 'include'],
-        \ 'resize' : 1,
-        \ 'split_width' : 30,
-        \ 'todo_sorted' : 0,
-        \ 'show_help' : 1,
-        \ 'show_numbers' : 1,
-        \ 'mode' : 2,
-        \ }
-
-  " Viewer settings for different platforms
-  if g:is_win
-    let g:vimtex_view_general_viewer = 'SumatraPDF'
-    let g:vimtex_view_general_options = '-reuse-instance -forward-search @tex @line @pdf'
-  endif
-
-  if g:is_mac
-    " let g:vimtex_view_method = "skim"
-    let g:vimtex_view_general_viewer = '/Applications/Skim.app/Contents/SharedSupport/displayline'
-    let g:vimtex_view_general_options = '-r @line @pdf @tex'
-
-    augroup vimtex_mac
-      autocmd!
-      autocmd User VimtexEventCompileSuccess call UpdateSkim()
-    augroup END
-
-    " The following code is adapted from https://gist.github.com/skulumani/7ea00478c63193a832a6d3f2e661a536.
-    function! UpdateSkim() abort
-      let l:out = b:vimtex.out()
-      let l:src_file_path = expand('%:p')
-      let l:cmd = [g:vimtex_view_general_viewer, '-r']
-
-      if !empty(system('pgrep Skim'))
-        call extend(l:cmd, ['-g'])
-      endif
-
-      call jobstart(l:cmd + [line('.'), l:out, l:src_file_path])
-    endfunction
-  endif
-endif
 
 """"""""""""""""""""""""""""vim-matchup settings"""""""""""""""""""""""""""""
 " Improve performance

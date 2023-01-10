@@ -6,8 +6,8 @@ require("bufferline").setup {
     left_mouse_command = "buffer %d",
     middle_mouse_command = nil,
     indicator = {
-      icon = "▎", -- this should be omitted if indicator style is not 'icon'
-      style = "icon",
+      --icon = "▎", -- this should be omitted if indicator style is not 'icon'
+      style = "underline",
     },
     buffer_close_icon = "",
     modified_icon = "●",
@@ -17,7 +17,7 @@ require("bufferline").setup {
     max_name_length = 18,
     max_prefix_length = 15,
     tab_size = 10,
-    diagnostics = false,
+    diagnostics = "nvim_lsp",
     custom_filter = function(bufnr)
       -- if the result is false, this buffer will be shown, otherwise, this
       -- buffer will be hidden.
@@ -27,7 +27,11 @@ require("bufferline").setup {
       local cur_ft = vim.bo[bufnr].filetype
       local should_filter = vim.tbl_contains(exclude_ft, cur_ft)
 
-      if should_filter then
+      --JL: don't show hidden buffers. I want to be able to tell 
+      -- visually when I'm about to close the last active buffer.
+      local buff_not_hidden = vim.fn.getbufinfo(bufnr)[1].hidden == 1
+
+      if buff_not_hidden or should_filter then
         return false
       end
 
